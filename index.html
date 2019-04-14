@@ -96,8 +96,40 @@
         function battleRound(firstTeam, numberOfBattleRounds)
         {
             var battleP = $('#battleText');
-            battleP.append("<strong>Battle Round: " + numberOfBattleRounds + ":</strong><br/>");
-            battleP.append("Team " + firstTeam + " will attack first.<br/>")
+            battleP.append("<strong>Battle Round: " + String(numberOfBattleRounds) + ":</strong><br/>");
+            
+            var teamOneFighters = numberOfFightersLeft(1);
+            var teamTwoFighters = numberOfFightersLeft(2);
+            
+            battleP.append("Team One has " + String(teamOneFighters.length) + " fighters remaining.<br/>");
+            battleP.append("Team Two has " + String(teamTwoFighters.length) + " fighters remaining.<br/>");
+            
+            if ((teamOneFighters.length == 0) || (teamTwoFighters.length == 0))
+            {
+                if ((teamOneFighters.length == 0) && (teamTwoFighters.length == 0))
+                {
+                    battleP.append("It's a tie! No one wins!<br/>");
+                }
+                else if (teamOneFighters.length == 0)
+                {
+                    battleP.append("Team Two wins!<br/>");
+                }
+                else
+                {
+                    battleP.append("Team One wins!<br/>");
+                }
+            }
+            else
+            {
+                battleP.append("Team " + firstTeam + " will attack first.<br/>");
+            }
+        }
+        
+        function numberOfFightersLeft(teamNumber)
+        {
+            return fighterArray.filter(obj => {
+              return obj.team === 1
+            });
         }
     </script>
   </body>
