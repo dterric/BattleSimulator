@@ -20,9 +20,9 @@
                     <input type="radio" name="team" value="1" checked> One<br>
                     <input type="radio" name="team" value="2"> Two<br>
                 </form>
-                <select onChange="addToTeam()">
-                    <option selected>-</option>
-                    <option>Naked Human</option>
+                <select id="fighterType" onChange="addToTeam()">
+                    <option selected disabled value="none">-</option>
+                    <option value="Naked Human">Naked Human</option>
                 </select>
             </td>
         </tr>
@@ -40,7 +40,8 @@
     <script>
         function addToTeam()
         {
-            var teamNumber = $('#teamNumber').val();
+            var teamNumber = $("input[type=radio][name=team]:checked").val();
+            $('#fighterType').val("none");
         }
     </script>
   </body>
