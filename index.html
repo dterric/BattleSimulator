@@ -8,6 +8,9 @@
             outline: 1px solid black;
             text-align: center;
         }
+        table, tr {
+            width: 100%;
+        }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   </head>
@@ -41,6 +44,14 @@
         function addToTeam()
         {
             var teamNumber = $("input[type=radio][name=team]:checked").val();
+            var fighterType = $('#fighterType option:selected').val();
+            var liToAppend = "<li>" + fighterType + "</li>";
+            alert(liToAppend);
+            if (teamNumber == 1)
+            {
+                $('#teamOneRosterList').append(liToAppend);
+
+            }
             $('#fighterType').val("none");
         }
     </script>
