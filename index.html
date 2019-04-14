@@ -3,25 +3,45 @@
   <head>
     <meta charset="UTF-8">
     <title>BattleSimulator</title>
+    <style>
+        td {
+            outline: 1px solid black;
+            text-align: center;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   </head>
   <body>
     <table>
         <tr>
-            <td>
-                <p>Add to Team 1</p>
-            </td>
-            <td>
-                <p>Add to Team 2</p>
+            <td colspan="2">
+                <p>Add Fighter to Team: </p>
+                <form id="teamNumber">
+                    <input type="radio" name="team" value="1" checked> One<br>
+                    <input type="radio" name="team" value="2"> Two<br>
+                </form>
+                <select onChange="addToTeam()">
+                    <option selected>-</option>
+                    <option>Naked Human</option>
+                </select>
             </td>
         </tr>
         <tr>
             <td>
                 <p>Team 1</p>
+                <ul id="teamOneRosterList"></ul>
             </td>
             <td>
                 <p>Team 2</p>
+                <ul id="teamTwoRosterList"></ul>
             </td>
         </tr>
     </table>
+    <script>
+        function addToTeam()
+        {
+            var teamNumber = $('#teamNumber').val();
+        }
+    </script>
   </body>
 </html>
