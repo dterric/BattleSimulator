@@ -55,11 +55,13 @@
         function fighter(fighterName, teamNumber)
         {
             this.team = teamNumber;
+            this.dead = false;
+            this.name = fighterName;
             switch(fighterName) {
                 default: //Naked Human
                     this.speed = 20;
                     this.health = 25;
-                    this.attack = 25;
+                    this.attack = 5;
             }
         }
         
@@ -74,6 +76,10 @@
             if (teamNumber == 1)
             {
                 $('#teamOneRosterList').append(liToAppend);
+            }
+            else
+            {
+                $('#teamTwoRosterList').append(liToAppend);
             }
             $('#fighterType').val("none");
         }
@@ -122,13 +128,52 @@
             else
             {
                 battleP.append("Team " + firstTeam + " will attack first.<br/>");
+                
+                fighterArray.sort(
+                    (a, b) => (a.speed > b.speed) ? 1 : (a.speed == b.speed) ? ((a.team != firstTeam) ? 1 : -1) : -1 
+                );
+                for (i = 0; i < fighterArray.length; i++)
+                {
+                    var fighter = fighterArray[i];
+                    if (fighter.dead == false)
+                    {
+                        var targets = fighterArray.filter(obj => {
+                            return ((obj.team != fighter.team)
+                                && (!obj.dead))
+                        });
+                        if (targets.length > 0)
+                        {
+                            targets.sort((a,b) => (a.attack > b.attack) ? 1 : -1);
+                            targets[0].health -= fighter.attack;
+                            battleP.append(
+                                String(fighter.name) 
+                                + " (Team " 
+                                + String(fighter.team) 
+                                + ") hits "
+                                + String(targets[0].name) 
+                                + " (Team " 
+                                + String(targets[0].team) 
+                                + ") for "
+                                + String(fighter.attack) 
+                                + " damage.<br/>");
+                            if (targets[0].health <= 0)
+                            {
+                                targets[0].dead = true;
+                                battleP.append("It was a lethal blow.<br/>");
+                            }
+                        }
+                    }
+                }
+                fighterArray = fighterArray.filter(obj => {return !obj.dead});
+                firstTeam = firstTeam == 1 ? 2 : 1; 
+                battleRound(firstTeam, numberOfBattleRounds + 1);
             }
         }
         
         function numberOfFightersLeft(teamNumber)
         {
             return fighterArray.filter(obj => {
-              return obj.team === 1
+              return obj.team === teamNumber
             });
         }
     </script>
