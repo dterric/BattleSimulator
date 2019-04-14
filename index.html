@@ -52,8 +52,9 @@
         
     </p>
     <script>
-        function fighter(fighterName)
+        function fighter(fighterName, teamNumber)
         {
+            this.team = teamNumber;
             switch(fighterName) {
                 default: //Naked Human
                     this.speed = 20;
@@ -79,12 +80,24 @@
         function startBattle()
         {
             $('#setupTable').css("display","none");
-            teamOneArray = new Array();
+            fighterArray = new Array();
             for (i = 0; i < $('ul#teamOneRosterList li').length; i++)
             {
-                alert(i);
+                var fighterType = $("ul#teamOneRosterList li").eq(i).html();
+                fighterArray.push(new fighter(fighterType, 1));
             }
-            teamTwoArray = new Array();
+            for (i = 0; i < $('ul#teamTwoRosterList li').length; i++)
+            {
+                var fighterType = $("ul#teamTwoRosterList li").eq(i).html();
+                fighterArray.push(new fighter(fighterType, 2));
+            }
+            battleRound(1, 1);
+        }
+        function battleRound(firstTeam, numberOfBattleRounds)
+        {
+            var battleP = $('#battleText');
+            battleP.append("<strong>Battle Round: " + numberOfBattleRounds + ":</strong><br/>");
+            battleP.append("Team " + firstTeam + " will attack first.<br/>")
         }
     </script>
   </body>
