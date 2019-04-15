@@ -31,8 +31,10 @@
                     <option value="Alligator">Alligator</option>
 					<option value="Baby Penguin">Baby Penguin</option>
 					<option value="Cerberus">Cerberus</option>
+					<option value="Druid">Druid</option>
 					<option value="Giant Mutant Snail">Giant Mutant Snail</option>
 					<option value="Gorilla">Gorilla</option>
+					<option value="Medic">Medic</option>
 					<option value="Naked Human">Naked Human</option>
 					<option value="Snail">Snail</option>
 					<option value="Tank">Tank</option>
@@ -79,6 +81,7 @@
             this.team = teamNumber;
             this.dead = false;
             this.name = fighterName;
+			this.healing = 0;
             switch(fighterName) {
                 case "Alligator":
 					this.speed = 25;
@@ -120,6 +123,20 @@
 					this.speed = 70;
                     this.health = 120;
                     this.attack = 100;
+					break;
+					
+				case "Medic":
+					this.speed = 20;
+                    this.health = 25;
+                    this.attack = 5;
+					this.healing = 10;
+					break;
+				
+				case "Druid":
+					this.speed = 20;
+                    this.health = 20;
+                    this.attack = 5;
+					this.healing = 35;
 					break;
 				
 				default: //Naked Human
@@ -204,6 +221,36 @@
                 for (i = 0; i < fighterArray.length; i++)
                 {
                     var fighter = fighterArray[i];
+					if (fighter.healing > 0)
+					{
+						var allies = fighterArray.filter(obj => {
+						return ((obj.team == fighter.team))
+						});
+						if (allies.length > 0)
+						{
+							allies.sort((a,b) => (a.attack < b.attack) ? 1 : -1);
+							var allyIsDead = allies[0].dead;
+							allies[0].health += fighter.healing;
+							battleP.append(
+							String(fighter.name) 
+							+ " (Team " 
+							+ String(fighter.team) 
+							+ ") heals "
+							+ String(allies[0].name) 
+							+ " (Team " 
+							+ String(allies[0].team) 
+							+ ") for "
+							+ String(fighter.healing) 
+							+ " health.<br/>");
+							if (allyIsDead && allies[0].health > 0)
+							{
+								allies[0].dead = false;
+								battleP.append("<span style='color: blue'>It was enough to save his/her life.</span><br/>");
+							}
+							
+						}
+					}
+					
 					var targets = fighterArray.filter(obj => {
 						return ((obj.team != fighter.team)
 							&& (!obj.dead))
