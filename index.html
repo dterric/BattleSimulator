@@ -31,8 +31,11 @@
                     <option value="Alligator">Alligator</option>
 					<option value="Baby Penguin">Baby Penguin</option>
 					<option value="Cerberus">Cerberus</option>
+					<option value="Giant Mutant Snail">Giant Mutant Snail</option>
 					<option value="Gorilla">Gorilla</option>
 					<option value="Naked Human">Naked Human</option>
+					<option value="Snail">Snail</option>
+					<option value="Tank">Tank</option>
                 </select>
 				<br/>
 				<button onclick="removeFighter()">Remove Fighter</button>
@@ -89,6 +92,12 @@
                     this.attack = 20;
 					break;
 				
+				case "Giant Mutant Snail":
+					this.speed = 5;
+                    this.health = 130;
+                    this.attack = 5;
+					break;
+				
 				case "Gorilla":
 					this.speed = 35;
                     this.health = 70;
@@ -99,6 +108,18 @@
 					this.speed = 5;
                     this.health = 10;
                     this.attack = 2;
+					break;
+				
+				case "Snail":
+					this.speed = 1;
+                    this.health = 2;
+                    this.attack = 0.2;
+					break;
+				
+				case "Tank":
+					this.speed = 70;
+                    this.health = 120;
+                    this.attack = 100;
 					break;
 				
 				default: //Naked Human
@@ -169,6 +190,10 @@
                     battleP.append("Team One wins!<br/>");
                 }
             }
+			else if (numberOfBattleRounds >= 1000)
+			{
+				battleP.append("All Fighters die of old age. It's a tie! No one wins!<br/>");
+			}
             else
             {
                 battleP.append("Team " + firstTeam + " will attack first.<br/>");
@@ -179,34 +204,31 @@
                 for (i = 0; i < fighterArray.length; i++)
                 {
                     var fighter = fighterArray[i];
-                    if (fighter.dead == false)
-                    {
-                        var targets = fighterArray.filter(obj => {
-                            return ((obj.team != fighter.team)
-                                && (!obj.dead))
-                        });
-                        if (targets.length > 0)
-                        {
-                            targets.sort((a,b) => (a.attack < b.attack) ? 1 : -1);
-                            targets[0].health -= fighter.attack;
-                            battleP.append(
-                                String(fighter.name) 
-                                + " (Team " 
-                                + String(fighter.team) 
-                                + ") hits "
-                                + String(targets[0].name) 
-                                + " (Team " 
-                                + String(targets[0].team) 
-                                + ") for "
-                                + String(fighter.attack) 
-                                + " damage.<br/>");
-                            if (targets[0].health <= 0)
-                            {
-                                targets[0].dead = true;
-                                battleP.append("<span style='color: red'>It was a lethal blow.</span><br/>");
-                            }
-                        }
-                    }
+					var targets = fighterArray.filter(obj => {
+						return ((obj.team != fighter.team)
+							&& (!obj.dead))
+					});
+					if (targets.length > 0)
+					{
+						targets.sort((a,b) => (a.attack < b.attack) ? 1 : -1);
+						targets[0].health -= fighter.attack;
+						battleP.append(
+							String(fighter.name) 
+							+ " (Team " 
+							+ String(fighter.team) 
+							+ ") hits "
+							+ String(targets[0].name) 
+							+ " (Team " 
+							+ String(targets[0].team) 
+							+ ") for "
+							+ String(fighter.attack) 
+							+ " damage.<br/>");
+						if (targets[0].health <= 0)
+						{
+							targets[0].dead = true;
+							battleP.append("<span style='color: red'>It was a lethal blow.</span><br/>");
+						}
+					}
                 }
                 fighterArray = fighterArray.filter(obj => {return !obj.dead});
                 firstTeam = firstTeam == 1 ? 2 : 1; 
