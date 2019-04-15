@@ -20,7 +20,7 @@
   <body>
     <table id="setupTable">
         <tr>
-            <td colspan="2">
+            <td colspan="2" id="addFightersTD">
                 <p>Add Fighter to Team: </p>
                 <form id="teamNumber">
                     <input type="radio" name="team" value="1" checked> One<br>
@@ -28,10 +28,14 @@
                 </form>
                 <select id="fighterType" onChange="addToTeam()">
                     <option selected disabled value="none">-</option>
-                    <option value="Naked Human">Naked Human</option>
+                    <option value="Alligator">Alligator</option>
 					<option value="Baby Penguin">Baby Penguin</option>
+					<option value="Cerberus">Cerberus</option>
 					<option value="Gorilla">Gorilla</option>
+					<option value="Naked Human">Naked Human</option>
                 </select>
+				<br/>
+				<button onclick="removeFighter()">Remove Fighter</button>
             </td>
         </tr>
         <tr>
@@ -45,7 +49,7 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">
+            <td colspan="2" id="startBattleTD">
                 <button onclick="startBattle()">Start Battle</button>
             </td>
         </tr>
@@ -54,13 +58,38 @@
         
     </p>
     <script>
-        function fighter(fighterName, teamNumber)
+        function removeFighter()
+		{
+			var teamNumber = $("input[type=radio][name=team]:checked").val();
+			if (teamNumber == 1)
+			{
+				$('#teamOneRosterList li').last().remove();
+			}
+			else
+			{
+				$('#teamTwoRosterList li').last().remove();
+			}
+		}
+		
+		function fighter(fighterName, teamNumber)
         {
             this.team = teamNumber;
             this.dead = false;
             this.name = fighterName;
             switch(fighterName) {
-                case "Gorilla":
+                case "Alligator":
+					this.speed = 25;
+                    this.health = 50;
+                    this.attack = 30;
+					break;
+				
+				case "Cerberus":
+					this.speed = 30;
+                    this.health = 40;
+                    this.attack = 20;
+					break;
+				
+				case "Gorilla":
 					this.speed = 35;
                     this.health = 70;
                     this.attack = 30;
@@ -99,7 +128,8 @@
         }
         function startBattle()
         {
-            $('#setupTable').css("display","none");
+            $('#addFightersTD').css("display","none");
+			$('#startBattleTD').css("display","none");
             fighterArray = new Array();
             for (i = 0; i < $('ul#teamOneRosterList li').length; i++)
             {
@@ -173,7 +203,7 @@
                             if (targets[0].health <= 0)
                             {
                                 targets[0].dead = true;
-                                battleP.append("It was a lethal blow.<br/>");
+                                battleP.append("<span style='color: red'>It was a lethal blow.</span><br/>");
                             }
                         }
                     }
