@@ -31,9 +31,11 @@
                     <option value="Alligator">Alligator</option>
 					<option value="Baby Penguin">Baby Penguin</option>
 					<option value="Cerberus">Cerberus</option>
+					<option value="Cheetah">Cheetah</option>
 					<option value="Druid">Druid</option>
 					<option value="Giant Mutant Snail">Giant Mutant Snail</option>
 					<option value="Gorilla">Gorilla</option>
+					<option value="Hawk">Hawk</option>
 					<option value="Knight">Knight</option>
 					<option value="Lich">Lich</option>
 					<option value="Medic">Medic</option>
@@ -118,6 +120,7 @@
             this.name = fighterName;
 			this.healing = 0;
 			this.necromancy = false;
+			this.dodge = false;
             switch(fighterName) {
                 case "Alligator":
 					this.speed = 25;
@@ -135,6 +138,13 @@
 					this.speed = 30;
                     this.health = 40;
                     this.attack = 20;
+					break;
+					
+				case "Cheetah":
+				    this.dodge = true;
+					this.speed = 100;
+                    this.health = 30;
+                    this.attack = 15;
 					break;
 				
 				case "Giant Mutant Snail":
@@ -185,6 +195,13 @@
 					this.speed = 15;
                     this.health = 35;
                     this.attack = 10;
+					break;
+					
+				case "Hawk":
+					this.speed = 150;
+                    this.health = 10;
+                    this.attack = 10;
+                    this.dodge = true;
 					break;
 					
 				case "Lich":
@@ -319,18 +336,36 @@
 					if (targets.length > 0)
 					{
 						targets.sort((a,b) => (a.attack < b.attack) ? 1 : -1);
-						targets[0].health -= fighter.attack;
-						battleP.append(
-							String(fighter.name) 
-							+ " (Team " 
-							+ String(fighter.team) 
-							+ ") hits "
-							+ String(targets[0].name) 
-							+ " (Team " 
-							+ String(targets[0].team) 
-							+ ") for "
-							+ String(fighter.attack) 
-							+ " damage.<br/>");
+						if ((targets[0].dodge) && (targets[0].speed > fighter.speed))
+						{
+						    targets[0].speed -= fighter.speed;
+						    battleP.append(
+						        "<span style='color: green'>"
+    							+ String(fighter.name) 
+    							+ " (Team " 
+    							+ String(fighter.team) 
+    							+ ") misses an attack, directed at "
+    							+ String(targets[0].name) 
+    							+ " (Team " 
+    							+ String(targets[0].team)
+    							+ ")</span><br/>");
+						}
+						else
+						{
+						    targets[0].health -= fighter.attack;
+    						battleP.append(
+    							String(fighter.name) 
+    							+ " (Team " 
+    							+ String(fighter.team) 
+    							+ ") hits "
+    							+ String(targets[0].name) 
+    							+ " (Team " 
+    							+ String(targets[0].team) 
+    							+ ") for "
+    							+ String(fighter.attack) 
+    							+ " damage.<br/>"); 
+						}
+						
 						if (targets[0].health <= 0)
 						{
 							targets[0].dead = true;
