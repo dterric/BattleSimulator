@@ -5,8 +5,8 @@
     <title>BattleSimulator</title>
     <style>
         td {
-            outline: 1px solid black;
             text-align: center;
+			outline: 1px solid black;
         }
         table, tr {
             width: 100%;
@@ -34,13 +34,25 @@
 					<option value="Druid">Druid</option>
 					<option value="Giant Mutant Snail">Giant Mutant Snail</option>
 					<option value="Gorilla">Gorilla</option>
+					<option value="Knight">Knight</option>
+					<option value="Lich">Lich</option>
 					<option value="Medic">Medic</option>
 					<option value="Naked Human">Naked Human</option>
+					<option value="Octopus">Octopus</option>
 					<option value="Snail">Snail</option>
 					<option value="Tank">Tank</option>
                 </select>
 				<br/>
+				<p>Number of Fighters to Add:<input type="number" id="numRandomFighters" value="1" min="1"></input></p>
+				<button onclick="addRandomFighters()">Random Fighter</button>
+				<br/>
 				<button onclick="removeFighter()">Remove Fighter</button>
+            </td>
+        </tr>
+		<tr>
+            <td colspan="2">
+                <button onclick="startBattle()" id="startBattleButton">Start Battle</button>
+				<button onclick="reset()">Reset</button>
             </td>
         </tr>
         <tr>
@@ -53,17 +65,17 @@
                 <ul id="teamTwoRosterList"></ul>
             </td>
         </tr>
-        <tr>
-            <td colspan="2" id="startBattleTD">
-                <button onclick="startBattle()">Start Battle</button>
-            </td>
-        </tr>
     </table>
     <p id="battleText">
         
     </p>
     <script>
-        function removeFighter()
+        function reset()
+		{
+			location.reload();
+		}
+		
+		function removeFighter()
 		{
 			var teamNumber = $("input[type=radio][name=team]:checked").val();
 			if (teamNumber == 1)
@@ -76,17 +88,47 @@
 			}
 		}
 		
+		function addRandomFighters()
+		{
+			var num = $('#numRandomFighters').val();
+			for (i = 0; i < num; i++)
+			{
+				var teamNumber = $("input[type=radio][name=team]:checked").val();
+				var fighterOptions = $('#fighterType option');
+				var rand = Math.floor(Math.random() * (fighterOptions.length - 1)) + 1;
+				var fighterType = fighterOptions.eq( rand ).val();
+				var liToAppend = "<li>" + fighterType + "</li>";
+				if (teamNumber == 1)
+				{
+					$('#teamOneRosterList').append(liToAppend);
+				}
+				else
+				{
+					$('#teamTwoRosterList').append(liToAppend);
+				}
+				
+			}
+			$('#fighterType').val("none");
+		}
+		
 		function fighter(fighterName, teamNumber)
         {
             this.team = teamNumber;
             this.dead = false;
             this.name = fighterName;
 			this.healing = 0;
+			this.necromancy = false;
             switch(fighterName) {
                 case "Alligator":
 					this.speed = 25;
                     this.health = 50;
                     this.attack = 30;
+					break;
+					
+				case "Octopus":
+					this.speed = 15;
+                    this.health = 50;
+                    this.attack = 25;
 					break;
 				
 				case "Cerberus":
@@ -138,6 +180,19 @@
                     this.attack = 5;
 					this.healing = 35;
 					break;
+					
+				case "Knight":
+					this.speed = 15;
+                    this.health = 35;
+                    this.attack = 10;
+					break;
+					
+				case "Lich":
+					this.speed = 20;
+                    this.health = 40;
+                    this.attack = 30;
+					this.necromancy = true;
+					break;
 				
 				default: //Naked Human
                     this.speed = 20;
@@ -151,23 +206,29 @@
         
         function addToTeam()
         {
-            var teamNumber = $("input[type=radio][name=team]:checked").val();
-            var fighterType = $('#fighterType option:selected').val();
-            var liToAppend = "<li>" + fighterType + "</li>";
-            if (teamNumber == 1)
-            {
-                $('#teamOneRosterList').append(liToAppend);
-            }
-            else
-            {
-                $('#teamTwoRosterList').append(liToAppend);
-            }
-            $('#fighterType').val("none");
+            
+			var num = $('#numRandomFighters').val();
+			for (i = 0; i < num; i++)
+			{
+				var teamNumber = $("input[type=radio][name=team]:checked").val();
+				var fighterType = $('#fighterType option:selected').val();
+				var liToAppend = "<li>" + fighterType + "</li>";
+				if (teamNumber == 1)
+				{
+					$('#teamOneRosterList').append(liToAppend);
+				}
+				else
+				{
+					$('#teamTwoRosterList').append(liToAppend);
+				}
+			}
+			$('#fighterType').val("none");
         }
         function startBattle()
         {
             $('#addFightersTD').css("display","none");
-			$('#startBattleTD').css("display","none");
+			$('#startBattleButton').css("display","none");
+			$('#resetTD').css("display","block");
             fighterArray = new Array();
             for (i = 0; i < $('ul#teamOneRosterList li').length; i++)
             {
@@ -274,6 +335,23 @@
 						{
 							targets[0].dead = true;
 							battleP.append("<span style='color: red'>It was a lethal blow.</span><br/>");
+							if (fighter.necromancy)
+							{
+								battleP.append(
+									"<span style='color: purple'>"
+									+ String(fighter.name) 
+									+ " (Team " 
+									+ String(fighter.team) 
+									+ ") resurrects "
+									+ String(targets[0].name) 
+									+ " (Team " 
+									+ String(targets[0].team) 
+									+ ") as a zombie.</span><br/>");
+								targets[0].dead = false;
+								targets[0].health = 5;
+								targets[0].team = fighter.team;
+								targets[0].name = "Zombie " + String(targets[0].name);
+							}
 						}
 					}
                 }
