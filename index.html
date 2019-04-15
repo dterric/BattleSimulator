@@ -29,6 +29,8 @@
                 <select id="fighterType" onChange="addToTeam()">
                     <option selected disabled value="none">-</option>
                     <option value="Naked Human">Naked Human</option>
+					<option value="Baby Penguin">Baby Penguin</option>
+					<option value="Gorilla">Gorilla</option>
                 </select>
             </td>
         </tr>
@@ -58,7 +60,19 @@
             this.dead = false;
             this.name = fighterName;
             switch(fighterName) {
-                default: //Naked Human
+                case "Gorilla":
+					this.speed = 35;
+                    this.health = 70;
+                    this.attack = 30;
+					break;
+				
+				case "Baby Penguin":
+					this.speed = 5;
+                    this.health = 10;
+                    this.attack = 2;
+					break;
+				
+				default: //Naked Human
                     this.speed = 20;
                     this.health = 25;
                     this.attack = 5;
@@ -130,7 +144,7 @@
                 battleP.append("Team " + firstTeam + " will attack first.<br/>");
                 
                 fighterArray.sort(
-                    (a, b) => (a.speed > b.speed) ? 1 : (a.speed == b.speed) ? ((a.team != firstTeam) ? 1 : -1) : -1 
+                    (a, b) => (a.speed < b.speed) ? 1 : (a.speed == b.speed) ? ((a.team != firstTeam) ? 1 : -1) : -1 
                 );
                 for (i = 0; i < fighterArray.length; i++)
                 {
@@ -143,7 +157,7 @@
                         });
                         if (targets.length > 0)
                         {
-                            targets.sort((a,b) => (a.attack > b.attack) ? 1 : -1);
+                            targets.sort((a,b) => (a.attack < b.attack) ? 1 : -1);
                             targets[0].health -= fighter.attack;
                             battleP.append(
                                 String(fighter.name) 
