@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>BattleSimulator</title>
+    <style>
+        td {
+            text-align: center;
+			outline: 1px solid black;
+        }
+        table, tr {
+            width: 100%;
+        }
+        li {
+            text-align: left;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <table id="setupTable">
+        <tr>
+            <td colspan="2" id="addFightersTD">
+                <p>Add Fighter to Team: </p>
+                <form id="teamNumber">
+                    <input type="radio" name="team" value="1" checked> One<br>
+                    <input type="radio" name="team" value="2"> Two<br>
+                </form>
+                <select id="fighterType" onChange="addToTeam()">
+                    <option selected disabled value="none">-</option>
+                    <option value="Alligator">Alligator</option>
+					<option value="Baby Penguin">Baby Penguin</option>
+					<option value="Cerberus">Cerberus</option>
+					<option value="Cheetah">Cheetah</option>
+					<option value="Druid">Druid</option>
+					<option value="Giant Mutant Snail">Giant Mutant Snail</option>
+					<option value="Gorilla">Gorilla</option>
+					<option value="Hawk">Hawk</option>
+					<option value="Knight">Knight</option>
+					<option value="Lich">Lich</option>
+					<option value="Medic">Medic</option>
+					<option value="Naked Human">Naked Human</option>
+					<option value="Octopus">Octopus</option>
+					<option value="Snail">Snail</option>
+					<option value="Tank">Tank</option>
+					<option value="Space Marine">Space Marine</option>
+                </select>
+				<br/>
+				<p>Number of Fighters to Add:<input type="number" id="numRandomFighters" value="1" min="1"></input></p>
+				<button onclick="addRandomFighters()">Random Fighter</button>
+				<br/>
+				<button onclick="removeFighter()">Remove Fighter</button>
+            </td>
+        </tr>
+		<tr>
+            <td colspan="2">
+                <button onclick="startBattle()" id="startBattleButton">Start Battle</button>
+				<button onclick="reset()">Reset</button>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>Team 1</p>
+                <ul id="teamOneRosterList"></ul>
+            </td>
+            <td>
+                <p>Team 2</p>
+                <ul id="teamTwoRosterList"></ul>
+            </td>
+        </tr>
+    </table>
+    <p id="battleText">
+        
+    </p>
+    <script>
+        function reset()
+		{
+			location.reload();
+		}
+		
+		function removeFighter()
+		{
+			var teamNumber = $("input[type=radio][name=team]:checked").val();
+			if (teamNumber == 1)
+			{
+				$('#teamOneRosterList li').last().remove();
+			}
+			else
+			{
+				$('#teamTwoRosterList li').last().remove();
+			}
+		}
+		
+		function addRandomFighters()
+		{
+			var num = $('#numRandomFighters').val();
+			for (i = 0; i < num; i++)
+			{
+				var teamNumber = $("input[type=radio][name=team]:checked").val();
+				var fighterOptions = $('#fighterType option');
+				var rand = Math.floor(Math.random() * (fighterOptions.length - 1)) + 1;
+				var fighterType = fighterOptions.eq( rand ).val();
+				var liToAppend = "<li>" + fighterType + "</li>";
+				if (teamNumber == 1)
+				{
+					$('#teamOneRosterList').append(liToAppend);
+				}
+				else
+				{
+					$('#teamTwoRosterList').append(liToAppend);
+				}
+				
+			}
+			$('#fighterType').val("none");
+		}
+		
+		function fighter(fighterName, teamNumber)
+        {
+            this.team = teamNumber;
+            this.dead = false;
+            this.name = fighterName;
+			this.healing = 0;
+			this.necromancy = false;
+			this.dodge = false;
+            switch(fighterName) {
+                case "Alligator":
+					this.speed = 25;
+                    this.health = 40;
+                    this.attack = 15;
+					this.armor = 15;
+					this.size = 3;
+					break;
+					
+				case "Octopus":
+					this.speed = 15;
+                    this.health = 40;
+                    this.attack = 5;
+					this.armor = 5;
+					this.size = 3;
+					break;
+					
+				case "Giant Octopus":
+					this.speed = 10;
+                    this.health = 200;
+                    this.attack = 30;
+					this.armor = 20;
+					this.size = 6;
+					break;
+				
+				case "Kraken":
+					this.speed = 10;
+                    this.health = 2000;
+                    this.attack = 75;
+					this.armor = 30;
+					this.size = 24;
+					break;
+				
+				case "Cerberus":
+					this.speed = 30;
+                    this.health = 50;
+                    this.attack = 20;
+					this.armor = 7;
+					this.size = 3;
+					
+					break;
+					
+				case "Cheetah":
+				    this.dodge = true;
+					this.speed = 100;
+                    this.health = 30;
+                    this.attack = 15;
+					this.armor = 5;
+					this.size = 3;
+					break;
+				
+				case "Giant Mutant Snail":
+					this.speed = 5;
+                    this.health = 130;
+                    this.attack = 5;
+					this.armor = 20;
+					this.size = 6;
+					break;
+				
+				case "Gorilla":
+					this.speed = 35;
+                    this.health = 70;
+                    this.attack = 30;
+					this.armor = 6;
+					this.size = 3;
+					break;
+				
+				case "Baby Penguin":
+					this.speed = 5;
+                    this.health = 5;
+                    this.attack = 1;
+					this.armor = 1;
+					this.size = 1;
+					break;
+				
+				case "Snail":
+					this.speed = 1;
+                    this.health = 2;
+                    this.attack = 0.1;
+					this.armor = 2;
+					this.size = 0.25;
+					break;
+				
+				case "Tank":
+					this.speed = 70;
+                    this.health = 250;
+                    this.attack = 100;
+					this.armor = 125;
+					this.size = 12;
+					break;
+					
+				case "Medic":
+					this.speed = 20;
+                    this.health = 30;
+                    this.attack = 5;
+					this.healing = 10;
+					this.armor = 7;
+					this.size = 3;
+					break;
+				
+				case "Druid":
+					this.speed = 20;
+                    this.health = 30;
+                    this.attack = 5;
+					this.healing = 35;
+					this.armor = 8;
+					this.size = 3;
+					break;
+					
+				case "Knight":
+					this.speed = 15;
+                    this.health = 45;
+                    this.attack = 10;
+					this.armor = 12;
+					this.size = 3;
+					break;
+					
+				case "Hawk":
+					this.speed = 150;
+                    this.health = 15;
+                    this.attack = 5;
+                    this.dodge = true;
+					this.armor = 2;
+					this.size = 2;
+					break;
+					
+				case "Lich":
+					this.speed = 20;
+                    this.health = 40;
+                    this.attack = 30;
+					this.necromancy = true;
+					this.armor = 15;
+					this.size = 3;
+					break;
+					
+				case "Space Marine":
+					this.speed = 600;
+                    this.health = 500;
+                    this.attack = 200;
+					this.armor = 150;
+					this.size = 6;
+					break;
+				
+				default: //Naked Human
+                    this.speed = 20;
+                    this.health = 25;
+                    this.attack = 5;
+					this.armor = 1;
+					this.size = 3;
+            }
+        }
+        
+        var teamOneArray;
+        var teamTwoArray;
+        
+        function addToTeam()
+        {
+            
+			var num = $('#numRandomFighters').val();
+			for (i = 0; i < num; i++)
+			{
+				var teamNumber = $("input[type=radio][name=team]:checked").val();
+				var fighterType = $('#fighterType option:selected').val();
+				var liToAppend = "<li>" + fighterType + "</li>";
+				if (teamNumber == 1)
+				{
+					$('#teamOneRosterList').append(liToAppend);
+				}
+				else
+				{
+					$('#teamTwoRosterList').append(liToAppend);
+				}
+			}
+			$('#fighterType').val("none");
+        }
+        function startBattle()
+        {
+            $('#addFightersTD').css("display","none");
+			$('#startBattleButton').css("display","none");
+			$('#resetTD').css("display","block");
+            fighterArray = new Array();
+            for (i = 0; i < $('ul#teamOneRosterList li').length; i++)
+            {
+                var fighterType = $("ul#teamOneRosterList li").eq(i).html();
+                fighterArray.push(new fighter(fighterType, 1));
+            }
+            for (i = 0; i < $('ul#teamTwoRosterList li').length; i++)
+            {
+                var fighterType = $("ul#teamTwoRosterList li").eq(i).html();
+                fighterArray.push(new fighter(fighterType, 2));
+            }
+            battleRound(1, 1);
+        }
+        function battleRound(firstTeam, numberOfBattleRounds)
+        {
+			var damagedone = 0;
+			var sizeQuotient = 0;
+            var battleP = $('#battleText');
+            battleP.append("<strong>Battle Round: " + String(numberOfBattleRounds) + ":</strong><br/>");
+            
+            var teamOneFighters = numberOfFightersLeft(1);
+            var teamTwoFighters = numberOfFightersLeft(2);
+            
+            battleP.append("Team One has " + String(teamOneFighters.length) + " fighters remaining.<br/>");
+            battleP.append("Team Two has " + String(teamTwoFighters.length) + " fighters remaining.<br/>");
+            
+            if ((teamOneFighters.length == 0) || (teamTwoFighters.length == 0))
+            {
+                if ((teamOneFighters.length == 0) && (teamTwoFighters.length == 0))
+                {
+                    battleP.append("It's a tie! No one wins!<br/>");
+                }
+                else if (teamOneFighters.length == 0)
+                {
+                    battleP.append("Team Two wins!<br/>");
+                }
+                else
+                {
+                    battleP.append("Team One wins!<br/>");
+                }
+            }
+			else if (numberOfBattleRounds >= 1000)
+			{
+				battleP.append("All Fighters die of old age. It's a tie! No one wins!<br/>");
+			}
+            else
+            {
+                battleP.append("Team " + firstTeam + " will attack first.<br/>");
+                
+                fighterArray.sort(
+                    (a, b) => (a.speed < b.speed) ? 1 : (a.speed == b.speed) ? ((a.team != firstTeam) ? 1 : -1) : -1 
+                );
+                for (i = 0; i < fighterArray.length; i++)
+                {
+					var fighter = fighterArray[i];
+					if (fighter.healing > 0)
+					{
+						var allies = fighterArray.filter(obj => {
+						return ((obj.team == fighter.team))
+						});
+						if (allies.length > 0)
+						{
+							allies.sort((a,b) => (a.attack < b.attack) ? 1 : -1);
+							var allyIsDead = allies[0].dead;
+							allies[0].health += fighter.healing;
+							battleP.append(
+							String(fighter.name) 
+							+ " (Team " 
+							+ String(fighter.team) 
+							+ ") heals "
+							+ String(allies[0].name) 
+							+ " (Team " 
+							+ String(allies[0].team) 
+							+ ") for "
+							+ String(fighter.healing) 
+							+ " health.<br/>");
+							if (allyIsDead && allies[0].health > 0)
+							{
+								allies[0].dead = false;
+								battleP.append("<span style='color: blue'>It was enough to save his/her life.</span><br/>");
+							}
+							
+						}
+					}
+					
+					var targets = fighterArray.filter(obj => {
+						return ((obj.team != fighter.team)
+							&& (!obj.dead))
+					});
+					if (targets.length > 0)
+					{
+						targets.sort((a,b) => (a.attack < b.attack) ? 1 : -1);
+						
+						if ((fighter.attack - targets[0].armor) <= 0)
+						{
+							damagedone = 0.1; //armor is greater so attack can only make a small cut/dent/spalling
+						}
+						else
+						{
+							damagedone = fighter.attack - targets[0].armor;//subtract armor from damage
+						}
+							
+						if ((targets[0].dodge) && (targets[0].speed > fighter.speed) && (((Math.random() * targets[0].speed)) > fighter.speed)) // Chance to dodge based on speed difference
+						{
+							battleP.append(
+								"<span style='color: green'>"
+								+ " ( DODGED! " 
+								+ String(fighter.name) 
+								+ " ( Team " 
+								+ String(fighter.team) 
+								+ ") misses an attack, directed at "
+								+ String(targets[0].name) 
+								+ " (Team " 
+								+ String(targets[0].team)
+								+ ")</span><br/>");
+						}
+						else
+						{
+							
+							
+							targets[0].health -= damagedone;//target takes damage
+							
+							if(targets[0].armor > 3)//Minimum armor = 3
+							{
+								targets[0].armor -= 1;//Armor Degradation
+							}
+							
+							battleP.append(
+								String(fighter.name) 
+								+ " (Team " 
+								+ String(fighter.team) 
+								+ ") hits "
+								+ String(targets[0].name) 
+								+ " (Team " 
+								+ String(targets[0].team) 
+								+ ") for "
+								+ String(damagedone) 
+								+ " damage.<br/>"); 
+							
+							battleP.append(
+							"<span style='color: red'>"
+							+ String(targets[0].name)
+							+ " has "							
+							+ String(targets[0].armor)
+							+ " armor left. "	
+							+ "</span><br/>");
+						}
+							
+						if(targets[0].speed > (targets[0].speed + fighter.speed)) 
+						{
+							targets[0].speed -= fighter.speed; //Still reducing speed
+						}
+						
+						if (targets[0].health <= 0)
+						{
+							targets[0].dead = true;
+							battleP.append("<span style='color: red'>It was a lethal blow.</span><br/>");
+							if (fighter.necromancy)
+							{
+								battleP.append(
+									"<span style='color: purple'>"
+									+ String(fighter.name) 
+									+ " (Team " 
+									+ String(fighter.team) 
+									+ ") resurrects "
+									+ String(targets[0].name) 
+									+ " (Team " 
+									+ String(targets[0].team) 
+									+ ") as a zombie.</span><br/>");
+								targets[0].dead = false;
+								targets[0].health = 5;
+								targets[0].team = fighter.team;
+								targets[0].name = "Zombie " + String(targets[0].name);
+							}
+						}
+					}
+					
+				}
+                
+                fighterArray = fighterArray.filter(obj => {return !obj.dead});
+                firstTeam = firstTeam == 1 ? 2 : 1; 
+                battleRound(firstTeam, numberOfBattleRounds + 1);
+            }
+        }
+        
+        function numberOfFightersLeft(teamNumber)
+        {
+            return fighterArray.filter(obj => {
+              return obj.team === teamNumber
+            });
+        }
+    </script>
+  </body>
+</html>
