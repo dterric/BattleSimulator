@@ -37,19 +37,23 @@
 					<option value="Dire Wolf">Dire Wolf</option>
 					<option value="Druid">Druid</option>
 					<option value="Giant Mutant Snail">Giant Mutant Snail</option>
+					<option value="Goblin">Goblin</option>
 					<option value="Goop Slug">Goop Slug</option>
 					<option value="Gorilla">Gorilla</option>
 					<option value="Hawk">Hawk</option>
 					<option value="Ice Wizard">Ice Wizard</option>
 					<option value="Knight">Knight</option>
 					<option value="Lich">Lich</option>
+					<option value="Lizard Man">Lizard Man</option>
 					<option value="Medic">Medic</option>
+					<option value="Monk">Monk</option>
 					<option value="Naked Human">Naked Human</option>
 					<option value="Octopus">Octopus</option>
 					<option value="Snail">Snail</option>
 					<option value="Tank">Tank</option>
 					<option value="Troll">Troll</option>
 					<option value="Wolf">Wolf</option>
+					<option value="Yeti">Yeti</option>
                 </select>
 				<br/>
 				<p>Number of Fighters to Add:<input type="number" id="numRandomFighters" value="1" min="1"></input></p>
@@ -177,6 +181,14 @@
                     this.attack = 15;
 					this.predator = true;
 					break;
+					
+				case "Monk":
+				    this.dodge = true;
+					this.speed = 125;
+                    this.health = 25;
+                    this.attack = 6;
+					this.soldier = true;
+					break;
 				
 				case "Giant Mutant Snail":
 					this.speed = 5;
@@ -196,6 +208,7 @@
                     this.health = 65;
                     this.attack = 30;
 					this.predator = true;
+					this.edible = false;
 					break;
 				
 				case "Baby Penguin":
@@ -248,6 +261,24 @@
 					this.soldier = true;
 					break;
 					
+				case "Lizard Man":
+					this.speed = 30;
+                    this.health = 25;
+                    this.attack = 15;
+					this.edible = false;
+					this.predator = true;
+					this.soldier = true;
+					this.dodge = true;
+					break;
+					
+				case "Goblin":
+					this.speed = 5;
+                    this.health = 10;
+                    this.attack = 3;
+					this.edible = false;
+					this.predator = true;
+					break;
+					
 				case "Hawk":
 					this.speed = 150;
                     this.health = 10;
@@ -264,7 +295,15 @@
 					this.edible = false;
 					this.commander = true;
 					break;
-					
+				
+				case "Yeti":
+					this.speed = 30;
+                    this.health = 75;
+                    this.attack = 30;
+					this.predator = true;
+					this.freezer = true;
+					break;
+				
 				case "Ice Wizard":
 					this.speed = 20;
                     this.health = 40;
