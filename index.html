@@ -29,13 +29,18 @@
                 <select id="fighterType" onChange="addToTeam()">
                     <option selected disabled value="none">-</option>
                     <option value="Alligator">Alligator</option>
+					<option value="Armored Human General">Armored Human General</option>
+					<option value="Armored Orc">Armored Orc</option>
 					<option value="Baby Penguin">Baby Penguin</option>
 					<option value="Cerberus">Cerberus</option>
 					<option value="Cheetah">Cheetah</option>
+					<option value="Dire Wolf">Dire Wolf</option>
 					<option value="Druid">Druid</option>
 					<option value="Giant Mutant Snail">Giant Mutant Snail</option>
+					<option value="Goop Slug">Goop Slug</option>
 					<option value="Gorilla">Gorilla</option>
 					<option value="Hawk">Hawk</option>
+					<option value="Ice Wizard">Ice Wizard</option>
 					<option value="Knight">Knight</option>
 					<option value="Lich">Lich</option>
 					<option value="Medic">Medic</option>
@@ -43,6 +48,8 @@
 					<option value="Octopus">Octopus</option>
 					<option value="Snail">Snail</option>
 					<option value="Tank">Tank</option>
+					<option value="Troll">Troll</option>
+					<option value="Wolf">Wolf</option>
                 </select>
 				<br/>
 				<p>Number of Fighters to Add:<input type="number" id="numRandomFighters" value="1" min="1"></input></p>
@@ -121,23 +128,46 @@
 			this.healing = 0;
 			this.necromancy = false;
 			this.dodge = false;
+			this.frozen = false;
+			this.freezer = false;
+			this.predator = false;
+			this.edible = true;
+			this.commander = false;
+			this.soldier = false;
             switch(fighterName) {
                 case "Alligator":
 					this.speed = 25;
                     this.health = 50;
                     this.attack = 30;
+					this.predator = true;
 					break;
 					
 				case "Octopus":
 					this.speed = 15;
                     this.health = 50;
                     this.attack = 25;
+					this.predator = true;
 					break;
 				
 				case "Cerberus":
 					this.speed = 30;
                     this.health = 40;
                     this.attack = 20;
+					this.predator = true;
+					break;
+					
+				case "Wolf":
+					this.speed = 30;
+                    this.health = 25;
+                    this.attack = 8;
+					this.predator = true;
+					break;
+					
+				case "Dire Wolf":
+					this.speed = 30;
+                    this.health = 45;
+                    this.attack = 15;
+					this.predator = true;
 					break;
 					
 				case "Cheetah":
@@ -145,18 +175,27 @@
 					this.speed = 100;
                     this.health = 30;
                     this.attack = 15;
+					this.predator = true;
 					break;
 				
 				case "Giant Mutant Snail":
 					this.speed = 5;
                     this.health = 130;
                     this.attack = 5;
+					this.edible = false;
 					break;
 				
 				case "Gorilla":
 					this.speed = 35;
                     this.health = 70;
                     this.attack = 30;
+					break;
+					
+				case "Troll":
+					this.speed = 25;
+                    this.health = 65;
+                    this.attack = 30;
+					this.predator = true;
 					break;
 				
 				case "Baby Penguin":
@@ -175,6 +214,7 @@
 					this.speed = 70;
                     this.health = 120;
                     this.attack = 100;
+					this.edible = false;
 					break;
 					
 				case "Medic":
@@ -182,6 +222,7 @@
                     this.health = 25;
                     this.attack = 5;
 					this.healing = 10;
+					this.soldier = true;
 					break;
 				
 				case "Druid":
@@ -195,6 +236,16 @@
 					this.speed = 15;
                     this.health = 35;
                     this.attack = 10;
+					this.soldier = true;
+					break;
+					
+				case "Armored Orc":
+					this.speed = 20;
+                    this.health = 30;
+                    this.attack = 12;
+					this.edible = false;
+					this.predator = true;
+					this.soldier = true;
 					break;
 					
 				case "Hawk":
@@ -202,6 +253,7 @@
                     this.health = 10;
                     this.attack = 10;
                     this.dodge = true;
+					this.predator = true;
 					break;
 					
 				case "Lich":
@@ -209,12 +261,37 @@
                     this.health = 40;
                     this.attack = 30;
 					this.necromancy = true;
+					this.edible = false;
+					this.commander = true;
+					break;
+					
+				case "Ice Wizard":
+					this.speed = 20;
+                    this.health = 40;
+                    this.attack = 30;
+					this.freezer = true;
+					this.commander = true;
+					break;
+					
+				case "Goop Slug":
+					this.speed = 3;
+                    this.health = 25;
+                    this.attack = 5;
+					this.edible = false;
+					break;
+					
+				case "Armored Human General":
+					this.speed = 15;
+                    this.health = 35;
+                    this.attack = 5;
+					this.commander = true;
 					break;
 				
 				default: //Naked Human
                     this.speed = 20;
                     this.health = 25;
                     this.attack = 5;
+					this.soldier = true;
             }
         }
         
@@ -263,7 +340,8 @@
         {
             var battleP = $('#battleText');
             battleP.append("<strong>Battle Round: " + String(numberOfBattleRounds) + ":</strong><br/>");
-            
+            var endOfRoundAppend = "";
+			
             var teamOneFighters = numberOfFightersLeft(1);
             var teamTwoFighters = numberOfFightersLeft(2);
             
@@ -299,99 +377,154 @@
                 for (i = 0; i < fighterArray.length; i++)
                 {
                     var fighter = fighterArray[i];
-					if (fighter.healing > 0)
+					
+					if (fighter.frozen)
 					{
-						var allies = fighterArray.filter(obj => {
-						return ((obj.team == fighter.team))
-						});
-						if (allies.length > 0)
-						{
-							allies.sort((a,b) => (a.attack < b.attack) ? 1 : -1);
-							var allyIsDead = allies[0].dead;
-							allies[0].health += fighter.healing;
-							battleP.append(
+						fighterArray[i].frozen = false;
+						battleP.append(
 							String(fighter.name) 
 							+ " (Team " 
-							+ String(fighter.team) 
-							+ ") heals "
-							+ String(allies[0].name) 
-							+ " (Team " 
-							+ String(allies[0].team) 
-							+ ") for "
-							+ String(fighter.healing) 
-							+ " health.<br/>");
-							if (allyIsDead && allies[0].health > 0)
-							{
-								allies[0].dead = false;
-								battleP.append("<span style='color: blue'>It was enough to save his/her life.</span><br/>");
-							}
-							
-						}
+							+ String(fighter.team)
+							+ ") has thawed.<br/>");
 					}
-					
-					var targets = fighterArray.filter(obj => {
-						return ((obj.team != fighter.team)
-							&& (!obj.dead))
-					});
-					if (targets.length > 0)
+					else
 					{
-						targets.sort((a,b) => (a.attack < b.attack) ? 1 : -1);
-						if ((targets[0].dodge) && (targets[0].speed > fighter.speed))
+						if (fighter.healing > 0)
 						{
-						    targets[0].speed -= fighter.speed;
-						    battleP.append(
-						        "<span style='color: green'>"
-    							+ String(fighter.name) 
-    							+ " (Team " 
-    							+ String(fighter.team) 
-    							+ ") misses an attack, directed at "
-    							+ String(targets[0].name) 
-    							+ " (Team " 
-    							+ String(targets[0].team)
-    							+ ")</span><br/>");
-						}
-						else
-						{
-						    targets[0].health -= fighter.attack;
-    						battleP.append(
-    							String(fighter.name) 
-    							+ " (Team " 
-    							+ String(fighter.team) 
-    							+ ") hits "
-    							+ String(targets[0].name) 
-    							+ " (Team " 
-    							+ String(targets[0].team) 
-    							+ ") for "
-    							+ String(fighter.attack) 
-    							+ " damage.<br/>"); 
+							var allies = fighterArray.filter(obj => {
+							return ((obj.team == fighter.team))
+							});
+							if (allies.length > 0)
+							{
+								allies.sort((a,b) => (a.attack < b.attack) ? 1 : -1);
+								var allyIsDead = allies[0].dead;
+								allies[0].health += fighter.healing;
+								battleP.append(
+								String(fighter.name) 
+								+ " (Team " 
+								+ String(fighter.team) 
+								+ ") heals "
+								+ String(allies[0].name) 
+								+ " (Team " 
+								+ String(allies[0].team) 
+								+ ") for "
+								+ String(fighter.healing) 
+								+ " health.<br/>");
+								if (allyIsDead && allies[0].health > 0)
+								{
+									allies[0].dead = false;
+									battleP.append("<span style='color: blue'>It was enough to save his/her life.</span><br/>");
+								}
+								
+							}
 						}
 						
-						if (targets[0].health <= 0)
+						var targets = fighterArray.filter(obj => {
+							return ((obj.team != fighter.team)
+								&& (!obj.dead))
+						});
+						if (targets.length > 0)
 						{
-							targets[0].dead = true;
-							battleP.append("<span style='color: red'>It was a lethal blow.</span><br/>");
-							if (fighter.necromancy)
+							targets.sort((a,b) => (a.attack < b.attack) ? 1 : -1);
+							if ((targets[0].dodge) && (targets[0].speed > fighter.speed))
 							{
+								targets[0].speed -= fighter.speed;
 								battleP.append(
-									"<span style='color: purple'>"
+									"<span style='color: green'>"
 									+ String(fighter.name) 
 									+ " (Team " 
 									+ String(fighter.team) 
-									+ ") resurrects "
+									+ ") misses an attack, directed at "
+									+ String(targets[0].name) 
+									+ " (Team " 
+									+ String(targets[0].team)
+									+ ")</span><br/>");
+							}
+							else
+							{
+								targets[0].health -= fighter.attack;
+								battleP.append(
+									String(fighter.name) 
+									+ " (Team " 
+									+ String(fighter.team) 
+									+ ") hits "
 									+ String(targets[0].name) 
 									+ " (Team " 
 									+ String(targets[0].team) 
-									+ ") as a zombie.</span><br/>");
-								targets[0].dead = false;
-								targets[0].health = 5;
-								targets[0].team = fighter.team;
-								targets[0].name = "Zombie " + String(targets[0].name);
+									+ ") for "
+									+ String(fighter.attack) 
+									+ " damage.<br/>");
+								if ((fighter.freezer) && (!targets[0].frozen))
+								{
+									targets[0].frozen = true;
+									battleP.append(
+										String(targets[0].name) 
+										+ " (Team " 
+										+ String(targets[0].team)
+										+ ") is frozen.<br/>");
+								}
+							}
+							
+							if (targets[0].health <= 0)
+							{
+								targets[0].dead = true;
+								battleP.append("<span style='color: red'>It was a lethal blow.</span><br/>");
+								if (fighter.necromancy)
+								{
+									battleP.append(
+										"<span style='color: purple'>"
+										+ String(fighter.name) 
+										+ " (Team " 
+										+ String(fighter.team) 
+										+ ") resurrects "
+										+ String(targets[0].name) 
+										+ " (Team " 
+										+ String(targets[0].team) 
+										+ ") as a zombie.</span><br/>");
+									targets[0].dead = false;
+									targets[0].health = 5;
+									targets[0].team = fighter.team;
+									targets[0].name = "Zombie " + String(targets[0].name);
+									targets[0].edible = false;
+									targets[0].predator = true;
+								}
+								else if ((fighter.predator) && (targets[0].edible))
+								{
+									endOfRoundAppend +=
+										String(fighter.name) 
+										+ " (Team " 
+										+ String(fighter.team) 
+										+ ") feeds on "
+										+ String(targets[0].name) 
+										+ " (Team " 
+										+ String(targets[0].team) 
+										+ "), restoring 5 health.</span><br/>";
+									fighterArray[i].health += 5;
+									if ((fighterArray[i].dead) && (fighter[i].health > 0))
+									{
+										fighterArray[i].dead = false;
+										battleP.append("<span style='color: blue'>It was enough to save his/her life.</span><br/>");
+									}
+								}
+								if (fighter.commander)
+								{
+									battleP.append("Allied soldiers inspired, their attack strength increases.<br/>");
+									for (j = 0; j < fighterArray.length; j++)
+									{
+										if ((fighterArray[i].soldier) && (fighterArray[i].team == fighter.team))
+										{
+											fighterArray[i].attack += 1;
+										}
+										
+									}
+								}
 							}
 						}
-					}
+					}	
                 }
                 fighterArray = fighterArray.filter(obj => {return !obj.dead});
                 firstTeam = firstTeam == 1 ? 2 : 1; 
+				battleP.append(endOfRoundAppend);
                 battleRound(firstTeam, numberOfBattleRounds + 1);
             }
         }
